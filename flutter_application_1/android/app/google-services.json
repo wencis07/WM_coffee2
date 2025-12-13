@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "863498003612",
+    "project_id": "mwcoffee-eafe0",
+    "storage_bucket": "mwcoffee-eafe0.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:863498003612:android:ed42fd78d8acec651c3959",
+        "android_client_info": {
+          "package_name": "com.example.flutter_application_1"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBIAhreyESiz9-yi-Zf4-a_sw2yxX6OUqQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
