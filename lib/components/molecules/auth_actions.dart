@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import '../../login.dart';
-import '../../createacc.dart';
+import 'package:flutter_application_1/pages/createacc.dart';
+import 'package:flutter_application_1/pages/login.dart';
 
 class AuthActions extends StatelessWidget {
   const AuthActions({super.key});

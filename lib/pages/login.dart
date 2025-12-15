@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_application_1/components/atoms/app_button.dart';
+import 'package:flutter_application_1/components/atoms/app_text_field.dart';
+import 'package:flutter_application_1/components/molecules/password_field.dart';
 import 'createacc.dart';
 import 'homepage.dart';
-
-// ATOMIC COMPONENTS
-import 'components/atoms/app_button.dart';
-import 'components/atoms/app_text_field.dart';
-import 'components/molecules/password_field.dart';
 
 class LogIn extends StatefulWidget {
   const LogIn({super.key});

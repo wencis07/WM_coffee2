@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
-
 import 'firebase_options.dart';
-
-// PAGE
 import 'components/atoms/app_logo.dart';
 import 'components/atoms/tagline.dart';
 import 'components/molecules/auth_actions.dart';

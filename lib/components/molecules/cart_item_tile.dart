@@ -39,6 +39,7 @@ class CartItemTile extends StatelessWidget {
                 Text(
                   "₱${item["price"]}",
                   style: const TextStyle(
+                    fontFamily: 'Poppins',
                     color: Color.fromARGB(255, 83, 83, 83),
                   ),
                 ),
