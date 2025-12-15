@@ -351,8 +351,6 @@ class CartItemTile extends StatelessWidget {
     final String name = item["name"];
     final int unitPrice = item["price"];
     final int quantity = item["quantity"];
-    final int totalPrice = unitPrice * quantity;
-    final String? imageUrl = item["image"]; // optional
 
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
@@ -363,19 +361,6 @@ class CartItemTile extends StatelessWidget {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Image
-            if (imageUrl != null && imageUrl.isNotEmpty)
-              ClipRRect(
-                borderRadius: BorderRadius.circular(8),
-                child: Image.network(
-                  imageUrl,
-                  width: 60,
-                  height: 60,
-                  fit: BoxFit.cover,
-                ),
-              ),
-            if (imageUrl != null && imageUrl.isNotEmpty) const SizedBox(width: 12),
-
             // Name + Prices
             Expanded(
               child: Column(
