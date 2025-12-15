@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../atoms/add_button.dart';
 
 class CoffeeCard extends StatelessWidget {
   final Map<String, dynamic> coffee;
@@ -17,9 +18,7 @@ class CoffeeCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(20),
-        boxShadow: const [
-          BoxShadow(color: Colors.black12, blurRadius: 4),
-        ],
+        boxShadow: const [BoxShadow(color: Colors.black12, blurRadius: 4)],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -33,9 +32,7 @@ class CoffeeCard extends StatelessWidget {
               fit: BoxFit.cover,
             ),
           ),
-
           const SizedBox(height: 8),
-
           Text(
             coffee["name"],
             style: const TextStyle(
@@ -43,23 +40,15 @@ class CoffeeCard extends StatelessWidget {
               fontSize: 16,
             ),
           ),
-
           const SizedBox(height: 4),
-
-          Text("₱${coffee["price"]}",
-              style: const TextStyle(color: Colors.orange)),
-
+          Text(
+            "₱${coffee["price"]}",
+            style: const TextStyle(color: Colors.orange),
+          ),
           const Spacer(),
-
           Align(
             alignment: Alignment.bottomRight,
-            child: IconButton(
-              onPressed: onAdd,
-              icon: const Icon(Icons.add, color: Colors.white),
-              style: IconButton.styleFrom(
-                backgroundColor: Colors.brown,
-              ),
-            ),
+            child: AddButton(onPressed: onAdd),
           ),
         ],
       ),

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/pages/createacc.dart';
+import 'package:flutter_application_1/pages/create_acc.dart';
 import 'package:flutter_application_1/pages/login.dart';
 
 class AuthActions extends StatelessWidget {
@@ -9,6 +9,7 @@ class AuthActions extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
+        // Original login button design
         SizedBox(
           width: 150,
           height: 45,
@@ -46,7 +47,7 @@ class AuthActions extends StatelessWidget {
           ],
         ),
 
-        const SizedBox(height: 15),
+        const SizedBox(height: 5),
 
         TextButton(
           onPressed: () {

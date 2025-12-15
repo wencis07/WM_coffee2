@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../atoms/user_icon.dart';
 
 class ProfileInfo extends StatelessWidget {
   final String name;
@@ -18,10 +19,8 @@ class ProfileInfo extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const Icon(Icons.person, size: 100, color: Colors.brown),
-
+          const UserIcon(),
           const SizedBox(height: 20),
-
           Text(
             name,
             style: const TextStyle(
@@ -29,22 +28,25 @@ class ProfileInfo extends StatelessWidget {
               fontWeight: FontWeight.bold,
             ),
           ),
-
           const SizedBox(height: 10),
-
           Text(
             email,
             style: const TextStyle(fontSize: 16, color: Colors.grey),
           ),
-
           const SizedBox(height: 20),
-
+          // Keep exact ElevatedButton design for logout
           ElevatedButton(
-            style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.red,
+              padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
+            ),
             onPressed: onLogout,
             child: const Text(
               "Logout",
-              style: TextStyle(color: Colors.white),
+              style: TextStyle(color: Colors.white, fontSize: 16),
             ),
           ),
         ],

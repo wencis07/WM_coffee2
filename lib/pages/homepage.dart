@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/components/atoms/section_title.dart';
-import 'package:flutter_application_1/components/molecules/cart_item_tile.dart';
+import 'package:flutter_application_1/components/organisms/cart_item_tile.dart';
 import 'package:flutter_application_1/components/organisms/coffee_card.dart';
 import 'package:flutter_application_1/components/organisms/profile_info.dart';
 import 'package:flutter_application_1/main.dart';
@@ -333,113 +333,6 @@ class CartPage extends StatelessWidget {
     );
   }
 }
-
-/// CART ITEM TILE
-class CartItemTile extends StatelessWidget {
-  final Map<String, dynamic> item;
-  final CollectionReference cartRef;
-
-  const CartItemTile({
-    super.key,
-    required this.item,
-    required this.cartRef,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final String id = item["id"];
-    final String name = item["name"];
-    final int unitPrice = item["price"];
-    final int quantity = item["quantity"];
-
-    return Card(
-      margin: const EdgeInsets.only(bottom: 12),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      elevation: 3,
-      child: Padding(
-        padding: const EdgeInsets.all(14),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Name + Prices
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    name,
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
-                    ),
-                  ),
-
-                  const SizedBox(height: 50),
-              
-                  Text(
-                    "₱$unitPrice",
-                    style: const TextStyle(
-                      fontSize: 15,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-
-            // Quantity + Delete
-            Column(
-              children: [
-                Container(
-                  decoration: BoxDecoration(
-                    color: Colors.grey.shade200,
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Row(
-                    children: [
-                      IconButton(
-                        icon: const Icon(Icons.remove, size: 20),
-                        onPressed: () async {
-                          if (quantity > 1) {
-                            await cartRef.doc(id).update({
-                              "quantity": FieldValue.increment(-1),
-                            });
-                          }
-                        },
-                      ),
-                      Text(
-                        "$quantity",
-                        style: const TextStyle(
-                            fontSize: 16, fontWeight: FontWeight.w600),
-                      ),
-                      IconButton(
-                        icon: const Icon(Icons.add, size: 20),
-                        onPressed: () async {
-                          await cartRef.doc(id).update({
-                            "quantity": FieldValue.increment(1),
-                          });
-                        },
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 8),
-                IconButton(
-                  icon: const Icon(Icons.delete, color: Colors.redAccent),
-                  onPressed: () async {
-                    await cartRef.doc(id).delete();
-                  },
-                ),
-              ],
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-
 
 
 /// PROFILE PAGE
