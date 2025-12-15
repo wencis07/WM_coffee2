@@ -39,7 +39,9 @@ class LandingPage extends StatelessWidget {
           children: const [
             Spacer(),
             AppLogo(),
+
             SizedBox(height: 40),
+            
             AppTagline(),
             Spacer(),
             Padding(

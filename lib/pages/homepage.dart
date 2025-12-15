@@ -7,8 +7,6 @@ import 'package:flutter_application_1/components/organisms/coffee_card.dart';
 import 'package:flutter_application_1/components/organisms/profile_info.dart';
 import 'package:flutter_application_1/main.dart';
 
-List<Map<String, dynamic>> cartItems = [];
-
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
@@ -58,11 +56,10 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 }
 
-// MENU PAGE
+/// MENU PAGE
 class MenuPage extends StatelessWidget {
   const MenuPage({super.key});
 
-  /// Converts Google Drive share links to direct image links
   String convertDriveLink(String url) {
     final regex = RegExp(r'/d/([a-zA-Z0-9_-]+)');
     final match = regex.firstMatch(url);
@@ -119,28 +116,36 @@ class MenuPage extends StatelessWidget {
                         onAdd: () async {
                           if (user == null) return;
 
-                          final coffeeData = {
-                            "name": coffee["name"],
-                            "price": coffee["price"],
-                            "quantity": 1,
-                            "addedAt": FieldValue.serverTimestamp(),
-                          };
+                          final cartRef = FirebaseFirestore.instance
+                              .collection("users")
+                              .doc(user.uid)
+                              .collection("cart");
 
-                          try {
-                            await FirebaseFirestore.instance
-                                .collection("users")
-                                .doc(user.uid)
-                                .collection("cart")
-                                .add(coffeeData);
+                          // Check if this coffee already exists in cart
+                          final existingQuery = await cartRef
+                              .where("name", isEqualTo: coffee["name"])
+                              .limit(1)
+                              .get();
 
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text("${coffee["name"]} added to cart")),
-                            );
-                          } catch (e) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text("Failed to add to cart: $e")),
-                            );
+                          if (existingQuery.docs.isNotEmpty) {
+                            final doc = existingQuery.docs.first;
+                            await doc.reference.update({
+                              "quantity": (doc["quantity"] ?? 1) + 1,
+                              "price": coffee["price"] * ((doc["quantity"] ?? 1) + 1),
+                              "addedAt": FieldValue.serverTimestamp(),
+                            });
+                          } else {
+                            await cartRef.add({
+                              "name": coffee["name"],
+                              "price": coffee["price"],
+                              "quantity": 1,
+                              "addedAt": FieldValue.serverTimestamp(),
+                            });
                           }
+
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text("${coffee["name"]} added to cart")),
+                          );
                         },
                       );
                     },
@@ -155,15 +160,14 @@ class MenuPage extends StatelessWidget {
   }
 }
 
-
-// CART PAGE
+/// CART PAGE
 class CartPage extends StatelessWidget {
   const CartPage({super.key});
 
   int calculateTotal(List<Map<String, dynamic>> items) {
     int total = 0;
     for (var item in items) {
-      total += item["price"] as int;
+      total += (item["price"] as int) * (item["quantity"] as int);
     }
     return total;
   }
@@ -173,6 +177,11 @@ class CartPage extends StatelessWidget {
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) return const Center(child: Text("Please log in"));
 
+    final cartRef = FirebaseFirestore.instance
+        .collection("users")
+        .doc(user.uid)
+        .collection("cart");
+
     return SafeArea(
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -181,55 +190,53 @@ class CartPage extends StatelessWidget {
           children: [
             const SectionTitle(title: "My Cart"),
             const SizedBox(height: 20),
-            
+
+            // Cart Items
             Expanded(
               child: StreamBuilder<QuerySnapshot>(
-                stream: FirebaseFirestore.instance
-                    .collection("users")
-                    .doc(user.uid)
-                    .collection("cart")
-                    .orderBy("addedAt", descending: true)
-                    .snapshots(),
+                stream: cartRef.orderBy("addedAt", descending: true).snapshots(),
                 builder: (context, snapshot) {
                   if (!snapshot.hasData) return const Center(child: CircularProgressIndicator());
 
                   final cartDocs = snapshot.data!.docs;
                   final cartItems = cartDocs
-                      .map((doc) => {"id": doc.id, ...doc.data() as Map<String, dynamic>})
+                      .map((doc) => {
+                            "id": doc.id,
+                            ...doc.data() as Map<String, dynamic>,
+                          })
                       .toList();
 
                   if (cartItems.isEmpty) {
-                    return const Center(child: Text("Your cart is empty", style: TextStyle(fontSize: 16)));
+                    return const Center(
+                      child: Text(
+                        "Your cart is empty",
+                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                      ),
+                    );
                   }
 
                   return ListView.builder(
                     itemCount: cartItems.length,
                     itemBuilder: (context, index) {
                       final item = cartItems[index];
-                      return CartItemTile(
-                        item: item,
-                        onDelete: () async {
-                          await FirebaseFirestore.instance
-                              .collection("users")
-                              .doc(user.uid)
-                              .collection("cart")
-                              .doc(item["id"])
-                              .delete();
-                        },
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 6),
+                        child: CartItemTile(
+                          item: item,
+                          cartRef: cartRef,
+                        ),
                       );
                     },
                   );
                 },
               ),
             ),
+
             const SizedBox(height: 10),
 
+            // Grand Total
             StreamBuilder<QuerySnapshot>(
-              stream: FirebaseFirestore.instance
-                  .collection("users")
-                  .doc(user.uid)
-                  .collection("cart")
-                  .snapshots(),
+              stream: cartRef.snapshots(),
               builder: (context, snapshot) {
                 final cartDocs = snapshot.data?.docs ?? [];
                 final cartItems = cartDocs
@@ -238,9 +245,9 @@ class CartPage extends StatelessWidget {
                 final totalPrice = calculateTotal(cartItems);
 
                 return Container(
-                  padding: const EdgeInsets.all(14),
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
                   decoration: BoxDecoration(
-                    color: Colors.brown,
+                    color: Colors.brown.shade700,
                     borderRadius: BorderRadius.circular(15),
                   ),
                   child: Row(
@@ -251,15 +258,16 @@ class CartPage extends StatelessWidget {
                         style: TextStyle(
                           fontFamily: 'Poppins',
                           color: Colors.white,
-                          fontSize: 16,
+                          fontSize: 18,
+                          fontWeight: FontWeight.w600,
                         ),
                       ),
                       Text(
                         "₱$totalPrice",
                         style: const TextStyle(
                           fontFamily: 'Poppins',
-                          color: Colors.white, 
-                          fontSize: 18, 
+                          color: Colors.white,
+                          fontSize: 20,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -268,33 +276,26 @@ class CartPage extends StatelessWidget {
                 );
               },
             ),
-            const SizedBox(height: 10),
 
+            const SizedBox(height: 12),
+
+            // Checkout Button
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color.fromARGB(255, 218, 158, 69),
-                  padding: const EdgeInsets.all(25),
+                  backgroundColor: Colors.orange.shade600,
+                  padding: const EdgeInsets.symmetric(vertical: 18),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                 ),
                 onPressed: () async {
-                  final cartSnapshot = await FirebaseFirestore.instance
-                      .collection("users")
-                      .doc(user.uid)
-                      .collection("cart")
-                      .get();
-
+                  final cartSnapshot = await cartRef.get();
                   if (cartSnapshot.docs.isEmpty) return;
 
-                  final cartItems = cartSnapshot.docs
-                      .map((doc) => doc.data())
-                      .toList();
-
-                  final totalPrice = calculateTotal(
-                      cartItems.map((e) => e).toList());
+                  final cartItems = cartSnapshot.docs.map((doc) => doc.data()).toList();
+                  final totalPrice = calculateTotal(cartItems);
 
                   try {
-                    // 1️⃣ Add to 'checkouts' collection
                     await FirebaseFirestore.instance.collection("checkouts").add({
                       "userId": user.uid,
                       "totalPrice": totalPrice,
@@ -302,7 +303,6 @@ class CartPage extends StatelessWidget {
                       "createdAt": FieldValue.serverTimestamp(),
                     });
 
-                    // 2️⃣ Clear the cart
                     for (var doc in cartSnapshot.docs) {
                       await doc.reference.delete();
                     }
@@ -321,6 +321,8 @@ class CartPage extends StatelessWidget {
                   style: TextStyle(
                     fontFamily: 'Poppins',
                     color: Colors.white,
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
               ),
@@ -332,9 +334,130 @@ class CartPage extends StatelessWidget {
   }
 }
 
+/// CART ITEM TILE
+class CartItemTile extends StatelessWidget {
+  final Map<String, dynamic> item;
+  final CollectionReference cartRef;
 
-// PROFILE PAGE
+  const CartItemTile({
+    super.key,
+    required this.item,
+    required this.cartRef,
+  });
 
+  @override
+  Widget build(BuildContext context) {
+    final String id = item["id"];
+    final String name = item["name"];
+    final int unitPrice = item["price"];
+    final int quantity = item["quantity"];
+    final int totalPrice = unitPrice * quantity;
+    final String? imageUrl = item["image"]; // optional
+
+    return Card(
+      margin: const EdgeInsets.only(bottom: 12),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      elevation: 3,
+      child: Padding(
+        padding: const EdgeInsets.all(14),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Image
+            if (imageUrl != null && imageUrl.isNotEmpty)
+              ClipRRect(
+                borderRadius: BorderRadius.circular(8),
+                child: Image.network(
+                  imageUrl,
+                  width: 60,
+                  height: 60,
+                  fit: BoxFit.cover,
+                ),
+              ),
+            if (imageUrl != null && imageUrl.isNotEmpty) const SizedBox(width: 12),
+
+            // Name + Prices
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    name,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
+                  ),
+
+                  const SizedBox(height: 50),
+              
+                  Text(
+                    "₱$unitPrice",
+                    style: const TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+            // Quantity + Delete
+            Column(
+              children: [
+                Container(
+                  decoration: BoxDecoration(
+                    color: Colors.grey.shade200,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Row(
+                    children: [
+                      IconButton(
+                        icon: const Icon(Icons.remove, size: 20),
+                        onPressed: () async {
+                          if (quantity > 1) {
+                            await cartRef.doc(id).update({
+                              "quantity": FieldValue.increment(-1),
+                            });
+                          }
+                        },
+                      ),
+                      Text(
+                        "$quantity",
+                        style: const TextStyle(
+                            fontSize: 16, fontWeight: FontWeight.w600),
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.add, size: 20),
+                        onPressed: () async {
+                          await cartRef.doc(id).update({
+                            "quantity": FieldValue.increment(1),
+                          });
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 8),
+                IconButton(
+                  icon: const Icon(Icons.delete, color: Colors.redAccent),
+                  onPressed: () async {
+                    await cartRef.doc(id).delete();
+                  },
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+
+
+
+/// PROFILE PAGE
 class ProfilePage extends StatelessWidget {
   const ProfilePage({super.key});
 
@@ -362,7 +485,6 @@ class ProfilePage extends StatelessWidget {
             onLogout: () async {
               await FirebaseAuth.instance.signOut();
               Navigator.pushReplacement(
-                // ignore: use_build_context_synchronously
                 context,
                 MaterialPageRoute(
                   builder: (context) => const LandingPage(),
