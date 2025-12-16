@@ -36,5 +36,8 @@ flutter:
     - family: Poppins
       fonts:
         - asset: fonts/Poppins-Medium.otf
+    - family: Poppins-Light
+      fonts:
+        - asset: fonts/Poppins-Light.otf
           
     

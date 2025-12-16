@@ -5,6 +5,9 @@ import 'components/atoms/app_logo.dart';
 import 'components/atoms/tagline.dart';
 import 'components/molecules/auth_actions.dart';
 
+/// ===============================
+/// MAIN FUNCTION
+/// ===============================
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
@@ -25,7 +28,9 @@ class MainApp extends StatelessWidget {
   }
 }
 
-
+/// ===============================
+/// LANDING PAGE
+/// ===============================
 class LandingPage extends StatelessWidget {
   const LandingPage({super.key});
 
@@ -38,12 +43,24 @@ class LandingPage extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: const [
             Spacer(),
+
+            /// -------------------------------
+            /// App Logo
+            /// -------------------------------
             AppLogo(),
 
             SizedBox(height: 40),
-            
+
+            /// -------------------------------
+            /// Tagline
+            /// -------------------------------
             AppTagline(),
+
             Spacer(),
+
+            /// -------------------------------
+            /// Authentication actions (Login/Register)
+            /// -------------------------------
             Padding(
               padding: EdgeInsets.only(bottom: 110),
               child: AuthActions(),

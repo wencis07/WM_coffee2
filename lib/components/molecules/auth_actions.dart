@@ -9,13 +9,12 @@ class AuthActions extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        // Original login button design
         SizedBox(
           width: 150,
           height: 45,
           child: ElevatedButton(
             style: ElevatedButton.styleFrom(
-              backgroundColor: const Color.fromARGB(255, 60, 46, 4),
+              backgroundColor: const Color(0xFF7b3f00),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(25),
               ),
@@ -28,7 +27,9 @@ class AuthActions extends StatelessWidget {
             },
             child: const Text(
               "Log In",
-              style: TextStyle(color: Colors.white, fontSize: 16),
+              style: TextStyle(
+                color: Colors.white, 
+                fontSize: 16),
             ),
           ),
         ),
@@ -38,12 +39,13 @@ class AuthActions extends StatelessWidget {
         const Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            SizedBox(width: 60, child: Divider()),
+            SizedBox(width: 45, child: Divider()),
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 8),
               child: Text("or"),
             ),
-            SizedBox(width: 60, child: Divider()),
+            SizedBox(width: 45, child: Divider()),
+
           ],
         ),
 

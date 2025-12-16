@@ -24,16 +24,24 @@ class ProfileInfo extends StatelessWidget {
           Text(
             name,
             style: const TextStyle(
+              fontFamily: 'Poppins',
               fontSize: 22,
               fontWeight: FontWeight.bold,
             ),
           ),
+
           const SizedBox(height: 10),
+
           Text(
             email,
-            style: const TextStyle(fontSize: 16, color: Colors.grey),
+            style: const TextStyle(
+              fontFamily: 'Poppins',
+              fontSize: 16, 
+              color: Colors.grey),
           ),
+
           const SizedBox(height: 20),
+
           // Keep exact ElevatedButton design for logout
           ElevatedButton(
             style: ElevatedButton.styleFrom(
@@ -46,7 +54,10 @@ class ProfileInfo extends StatelessWidget {
             onPressed: onLogout,
             child: const Text(
               "Logout",
-              style: TextStyle(color: Colors.white, fontSize: 16),
+              style: TextStyle(
+                fontFamily: 'Poppins',
+                color: Colors.white,
+                fontSize: 16),
             ),
           ),
         ],

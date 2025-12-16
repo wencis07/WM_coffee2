@@ -22,6 +22,7 @@ class CartItemTile extends StatelessWidget {
     final int totalPrice = unitPrice * quantity;
 
     return Card(
+      color: const Color(0xFFF8F5F0),
       margin: const EdgeInsets.only(bottom: 12),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       elevation: 3,

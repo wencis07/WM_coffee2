@@ -17,14 +17,24 @@ class CartItemInfo extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+
+       const SizedBox(height: 20),
+
         Text(
           name,
-          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+          style: const TextStyle(
+            fontFamily: 'Poppins-Light',
+            fontSize: 20),
         ),
-        const SizedBox(height: 50),
+
+        const SizedBox(height: 10),
+        
         Text(
           "₱$unitPrice",
-          style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
+          style: const TextStyle(
+            fontFamily: 'Poppins',
+            fontWeight: FontWeight.bold,
+            fontSize: 20),
         ),
       ],
     );

@@ -21,7 +21,10 @@ class AppTextField extends StatelessWidget {
       obscureText: obscureText,
       decoration: InputDecoration(
         labelText: label,
-        labelStyle: const TextStyle(fontSize: 12, color: Colors.black),
+        labelStyle: const TextStyle(
+          fontSize: 12, 
+          color: Colors.black),
+          
         filled: true,
         fillColor: Colors.grey.shade100,
         border: OutlineInputBorder(

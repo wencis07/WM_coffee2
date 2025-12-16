@@ -13,6 +13,7 @@ class CoffeeCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    bool isLoading = false;
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
@@ -32,23 +33,33 @@ class CoffeeCard extends StatelessWidget {
               fit: BoxFit.cover,
             ),
           ),
+
           const SizedBox(height: 8),
+
           Text(
             coffee["name"],
             style: const TextStyle(
+              fontFamily: 'Poppins',
               fontWeight: FontWeight.bold,
               fontSize: 16,
             ),
           ),
+
           const SizedBox(height: 4),
+
           Text(
             "₱${coffee["price"]}",
-            style: const TextStyle(color: Colors.orange),
+            style: const TextStyle(
+              fontFamily: 'Poppins',
+              color: Colors.orange),
           ),
           const Spacer(),
           Align(
             alignment: Alignment.bottomRight,
-            child: AddButton(onPressed: onAdd),
+            child: AddButton(
+              onPressed: onAdd,
+              isLoading: isLoading,
+              ),
           ),
         ],
       ),
